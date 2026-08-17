@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "renderer": "bluemap_crystalix:glass",
+      "model": "bluemap:block/missing"
+    }
+  }
+}

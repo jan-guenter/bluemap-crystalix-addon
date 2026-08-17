@@ -1,0 +1,8 @@
+{
+  "id": "bluemap_crystalix",
+  "name": "BlueMap Crystalix Add-on",
+  "entrypoint": "io.github.janguenter.bluemap.crystalix.BlueMapCrystalixAddon",
+  "version": "${version}",
+  "dependencies": [],
+  "soft-dependencies": []
+}
