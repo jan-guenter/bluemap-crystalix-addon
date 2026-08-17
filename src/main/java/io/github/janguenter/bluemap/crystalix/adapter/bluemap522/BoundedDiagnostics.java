@@ -1,0 +1,23 @@
+/*
+ * SPDX-License-Identifier: MIT
+ */
+package io.github.janguenter.bluemap.crystalix.adapter.bluemap522;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/** Process-bounded diagnostics that never include world, player, or NBT values. */
+final class BoundedDiagnostics {
+
+    private static final int MAX_MESSAGES = 12;
+
+    private final Set<String> seen = ConcurrentHashMap.newKeySet();
+    private final AtomicInteger emitted = new AtomicInteger();
+
+    void report(String key) {
+        if (seen.add(key) && emitted.incrementAndGet() <= MAX_MESSAGES) {
+            System.err.println("BlueMap Crystalix add-on skipped a visual: " + key + ".");
+        }
+    }
+}
