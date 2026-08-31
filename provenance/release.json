@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "unpublished-migration-candidate",
+  "published": false,
+  "version": "0.1.0-alpha.2",
+  "release_date": "2026-08-31",
+  "repository": "https://github.com/jan-guenter/bluemap-crystalix-addon",
+  "tag": "v0.1.0-alpha.2",
+  "maven_coordinate": "io.github.jan-guenter:bluemap-crystalix-addon:0.1.0-alpha.2",
+  "candidate_artifacts": {
+    "production_jar": {
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.jar",
+      "size": 50655,
+      "sha256": "62bbadf2f70d5335785001d26058a216892e6cf9db193db132ec4d93f862975b"
+    },
+    "sources_jar": {
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2-sources.jar",
+      "size": 25608,
+      "sha256": "80444f342f3603723c8d6783af1961ec992ee0ad9f03a90fc00d73a6a583569a"
+    },
+    "pom": {
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.pom",
+      "size": 1341,
+      "sha256": "f180cba9e3285fba7bfdc3d5b154e0db6eb40525c69dcf56bc9024b17b980263"
+    },
+    "gradle_module": {
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.module.json",
+      "size": 2831,
+      "sha256": "8f0c3338ab5c07afd148ea0e9702637f90e25ec2bc10036de9a09ee0ad2e5c2b"
+    }
+  },
+  "baseline_release": {
+    "version": "0.1.0-alpha.1",
+    "tag": "v0.1.0-alpha.1",
+    "commit": "b60a3fecb809fbaefb3347500d75b5d453cfe14a",
+    "production_jar_size": 47389,
+    "production_jar_sha256": "512e02fda272a1c6809fb6c30ee3958cdf13fb87e531b23355069f177458721b",
+    "owner_visual_acceptance": true
+  },
+  "adapter_api_migration": {
+    "repository": "https://github.com/jan-guenter/bluemap-addon-adapter-api",
+    "version": "0.1.0-alpha.2",
+    "tag": "v0.1.0-alpha.2",
+    "release_target_commit": "e81f08bc4bfbf02d810ec8949a019130e2e61634",
+    "source_tree": "2f974c9bb2ba13888d69682f86f30f58922d30eb",
+    "target_bluemap_version": "5.22-feature.backport-5.23-stateless-java-web-server-46",
+    "bluemap_commit": "7e07f4e74ec1e92a6ead9aa1e66054af3e133aac",
+    "bluemap_api_commit": "285c9a60eff3ac2b0cab308ce1058d1565be0971",
+    "tested_source_commit": "cd8569b7479654ce69d47be6bc889ae6d7f5d524",
+    "tested_source_tree": "a3a60bb08de4115cd38b696421947a5381261da8",
+    "compiled_source_count": 4,
+    "standalone_module_jar_bundled": false,
+    "standalone_module_jar_nested": false,
+    "standalone_module_jar_installed": false,
+    "local_adapter_package": "io.github.janguenter.bluemap.crystalix.adapter.bluemap523",
+    "displaced_local_helpers": [
+      "AdapterCompatibility",
+      "inline registry admission methods",
+      "CrystalixResourceExtensionType",
+      "inline synthetic dispatch validation"
+    ]
+  },
+  "preserved_contract": {
+    "routed_block_count": 3,
+    "persisted_rgb_behavior_changed": false,
+    "fusion_connectivity_changed": false,
+    "gallery_sources_changed": false,
+    "runtime_profile_and_renderer_behavior_changed": false
+  },
+  "verification": {
+    "exact_input_gate": true,
+    "production_archive_boundary_gate": true,
+    "sources_archive_boundary_gate": true,
+    "exact_feature_backport_runtime_identity_gate": true,
+    "gradle_9_6_1_clean_build": true,
+    "consumer_tests_passed": 2,
+    "checkstyle": true
+  }
+}

@@ -1,17 +1,15 @@
 /*
  * SPDX-License-Identifier: MIT
  */
-package io.github.janguenter.bluemap.crystalix.adapter.bluemap522;
+package io.github.janguenter.bluemap.crystalix.adapter.bluemap523;
 
 import de.bluecolored.bluemap.core.resources.pack.resourcepack.ResourcePack;
 import de.bluecolored.bluemap.core.resources.pack.resourcepack.ResourcePackExtension;
-import de.bluecolored.bluemap.core.resources.pack.resourcepack.blockstate.Variant;
-import de.bluecolored.bluemap.core.resources.pack.resourcepack.blockstate.VariantSet;
-import de.bluecolored.bluemap.core.resources.pack.resourcepack.blockstate.Variants;
 import de.bluecolored.bluemap.core.resources.pack.resourcepack.texture.Texture;
 import de.bluecolored.bluemap.core.util.Key;
 import de.bluecolored.bluemap.core.world.BlockProperties;
 import de.bluecolored.bluemap.core.world.BlockState;
+import io.github.janguenter.bluemap.addon.adapter.api.bluemap523.SyntheticDispatch;
 import io.github.janguenter.bluemap.crystalix.activation.CrystalixRuntime;
 import io.github.janguenter.bluemap.crystalix.profile.Crystalix300Fusion1312Profile;
 import io.github.janguenter.bluemap.crystalix.profile.ExactArtifactDetector;
@@ -73,7 +71,10 @@ final class CrystalixResourceExtension implements ResourcePackExtension {
             return;
         }
         try {
-            if (!validDispatch(resourcePack.getBlockStates().get(SYNTHETIC))) {
+            if (!SyntheticDispatch.matches(
+                    resourcePack.getBlockStates().get(SYNTHETIC),
+                    BlueMap523Adapter.renderer()
+            )) {
                 runtime.route().inactive("synthetic-dispatch-invalid");
                 return;
             }
@@ -174,26 +175,6 @@ final class CrystalixResourceExtension implements ResourcePackExtension {
             throw new IOException("FULL tile output is incomplete");
         }
         return generated;
-    }
-
-    private static boolean validDispatch(
-            de.bluecolored.bluemap.core.resources.pack.resourcepack.blockstate.BlockState state
-    ) {
-        if (state == null || state.getMultipart() != null) {
-            return false;
-        }
-        Variants variants = state.getVariants();
-        if (variants == null || variants.getDefaultVariant() == null) {
-            return false;
-        }
-        VariantSet set = variants.getDefaultVariant();
-        if (set.getVariants().length != 1) {
-            return false;
-        }
-        Variant variant = set.getVariants()[0];
-        return variant.getRenderer() == BlueMap522Adapter.renderer()
-                && ResourcePack.MISSING_BLOCK_MODEL.equals(variant.getModel())
-                && !variant.isTransformed() && !variant.isUvlock();
     }
 
     private record TileKey(Key source, int index) {
