@@ -105,19 +105,20 @@ jobs:
           gradle --no-daemon \
             -PbluemapSourcePath=.ci/bluemap \
             clean check build generatePomFileForAddonPublication \
-            generateMetadataFileForAddonPublication
+            generateMetadataFileForAddonPublication \
+            verifyAcceptedProductionJar
           test "$(stat -c %s \
             "build/libs/bluemap-crystalix-addon-${VERSION}-sources.jar")" \
-            -eq 20119
+            -eq 25608
           test "$(stat -c %s build/publications/addon/pom-default.xml)" \
             -eq 1341
           test "$(stat -c %s build/publications/addon/module.json)" \
             -eq 2831
           sha256sum --check <<SHA256SUMS
-          512e02fda272a1c6809fb6c30ee3958cdf13fb87e531b23355069f177458721b  build/libs/bluemap-crystalix-addon-${VERSION}.jar
-          fa853715534386d81ff40817efe70e0659975525eb0e19dddd6f5958d187d14d  build/libs/bluemap-crystalix-addon-${VERSION}-sources.jar
-          9a65c17ece50a7a846eb8fc9c0c7657600fefd4dbec5c87988a357245b26d2b1  build/publications/addon/pom-default.xml
-          0a629567fd9cf2b1dfc7d33d82c7b57ea2d02cc3f4422e757abc015261a5c6ef  build/publications/addon/module.json
+          d410d05d09f3f037b6972c87f774da8d2eec19762aad491354c51cd8af979116  build/libs/bluemap-crystalix-addon-${VERSION}.jar
+          80444f342f3603723c8d6783af1961ec992ee0ad9f03a90fc00d73a6a583569a  build/libs/bluemap-crystalix-addon-${VERSION}-sources.jar
+          12d6e8c8ea157d78cd0cf8f92df190d4cd2129eec704a0fe89b8791eaf31f73f  build/publications/addon/pom-default.xml
+          3a4c628519af846d3d955a5df25c90f5a737ea31c16140f9418fdfb5ac9d9a17  build/publications/addon/module.json
           SHA256SUMS
 
       - name: Prepare release bundle
@@ -133,7 +134,7 @@ jobs:
           (cd release && sha256sum --check SHA256SUMS)
           test "$(stat -c %s release/SHA256SUMS)" -eq 456
           test "$(sha256sum release/SHA256SUMS | cut -d ' ' -f 1)" = \
-            8b77bb868fc215d1b62b18cbca57c8d65f088e8dda0af2d1fe20ab827213ed9f
+            cfdd644022a6b5f4e50b5709c53fc4fec901155953305890759fd42a3bc398b4
 
       - name: Create or refresh draft release
         env:

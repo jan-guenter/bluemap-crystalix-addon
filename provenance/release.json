@@ -1,32 +1,32 @@
 {
   "schema_version": 1,
-  "status": "unpublished-migration-candidate",
+  "status": "owner-accepted-release-candidate",
   "published": false,
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "release_date": "2026-08-31",
   "repository": "https://github.com/jan-guenter/bluemap-crystalix-addon",
-  "tag": "v0.1.0-alpha.2",
-  "maven_coordinate": "io.github.jan-guenter:bluemap-crystalix-addon:0.1.0-alpha.2",
+  "tag": "v0.1.0-alpha.3",
+  "maven_coordinate": "io.github.jan-guenter:bluemap-crystalix-addon:0.1.0-alpha.3",
   "candidate_artifacts": {
     "production_jar": {
-      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.jar",
-      "size": 50655,
-      "sha256": "62bbadf2f70d5335785001d26058a216892e6cf9db193db132ec4d93f862975b"
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.3.jar",
+      "size": 50656,
+      "sha256": "d410d05d09f3f037b6972c87f774da8d2eec19762aad491354c51cd8af979116"
     },
     "sources_jar": {
-      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2-sources.jar",
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.3-sources.jar",
       "size": 25608,
       "sha256": "80444f342f3603723c8d6783af1961ec992ee0ad9f03a90fc00d73a6a583569a"
     },
     "pom": {
-      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.pom",
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.3.pom",
       "size": 1341,
-      "sha256": "f180cba9e3285fba7bfdc3d5b154e0db6eb40525c69dcf56bc9024b17b980263"
+      "sha256": "12d6e8c8ea157d78cd0cf8f92df190d4cd2129eec704a0fe89b8791eaf31f73f"
     },
     "gradle_module": {
-      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.2.module.json",
+      "file_name": "bluemap-crystalix-addon-0.1.0-alpha.3.module.json",
       "size": 2831,
-      "sha256": "8f0c3338ab5c07afd148ea0e9702637f90e25ec2bc10036de9a09ee0ad2e5c2b"
+      "sha256": "3a4c628519af846d3d955a5df25c90f5a737ea31c16140f9418fdfb5ac9d9a17"
     }
   },
   "baseline_release": {
@@ -36,6 +36,27 @@
     "production_jar_size": 47389,
     "production_jar_sha256": "512e02fda272a1c6809fb6c30ee3958cdf13fb87e531b23355069f177458721b",
     "owner_visual_acceptance": true
+  },
+  "failed_unpublished_tag": {
+    "version": "0.1.0-alpha.2",
+    "tag": "v0.1.0-alpha.2",
+    "tag_object": "19922bc2edb96581d8446232a275b6d0eda44fe0",
+    "target_commit": "872a2de7fd19cbc304815e616e3cecd758083b91",
+    "workflow_run": 33416154090,
+    "github_release_created": false,
+    "maven_package_published": false,
+    "reason": "release workflow retained alpha.1 sealed artifact identities"
+  },
+  "accepted_payload_equivalence": {
+    "accepted_alpha_2_production_sha256": "62bbadf2f70d5335785001d26058a216892e6cf9db193db132ec4d93f862975b",
+    "promoted_alpha_3_production_sha256": "d410d05d09f3f037b6972c87f774da8d2eec19762aad491354c51cd8af979116",
+    "identical_non_versioned_entries": 32,
+    "only_differing_entries": [
+      "META-INF/MANIFEST.MF",
+      "bluemap.addon.json"
+    ],
+    "sources_jar_byte_identical": true,
+    "renderer_and_resource_payload_changed": false
   },
   "adapter_api_migration": {
     "repository": "https://github.com/jan-guenter/bluemap-addon-adapter-api",
@@ -72,6 +93,7 @@
     "production_archive_boundary_gate": true,
     "sources_archive_boundary_gate": true,
     "exact_feature_backport_runtime_identity_gate": true,
+    "accepted_alpha_2_payload_equivalence_gate": true,
     "gradle_9_6_1_clean_build": true,
     "consumer_tests_passed": 2,
     "checkstyle": true

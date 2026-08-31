@@ -16,10 +16,12 @@ culling, and the Fusion FULL connected sheets used by the matching client.
   `7e07f4e74ec1e92a6ead9aa1e66054af3e133aac`, API commit
   `285c9a60eff3ac2b0cab308ce1058d1565be0971`.
 
-Version `0.1.0-alpha.2` is an unpublished migration candidate. It compiles the
-four Adapter API `0.1.0-alpha.2` sources and preserves the accepted renderer.
-The candidate production JAR is 50,655 bytes with SHA-256
-`62bbadf2f70d5335785001d26058a216892e6cf9db193db132ec4d93f862975b`.
+Version `0.1.0-alpha.3` is the owner-accepted migration release candidate. It
+compiles the four Adapter API `0.1.0-alpha.2` sources and preserves the
+accepted renderer. The production JAR is 50,656 bytes with SHA-256
+`d410d05d09f3f037b6972c87f774da8d2eec19762aad491354c51cd8af979116`.
+Its renderer and non-versioned resource payload are byte-identical to the
+accepted alpha.2 build; alpha.3 replaces the failed, unpublished alpha.2 tag.
 
 The add-on reads operator-installed resources and redistributes none of them.
 Unknown state, malformed/missing `color` NBT, missing resources, or a changed

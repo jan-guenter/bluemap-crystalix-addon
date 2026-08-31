@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.0-alpha.3 - 2026-08-31
+
+- Promote the owner-accepted 5.23 migration with all release artifact
+  identities sealed before tagging.
+- Preserve every renderer class and non-versioned resource byte from the
+  accepted alpha.2 build; only the manifest and add-on version metadata differ.
+- Leave the failed, unpublished `v0.1.0-alpha.2` tag immutable.
+
 ## 0.1.0-alpha.2 - 2026-08-31
 
 - Target only BlueMap feature-backport commit
