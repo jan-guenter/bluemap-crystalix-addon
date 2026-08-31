@@ -18,6 +18,8 @@ culling, and the Fusion FULL connected sheets used by the matching client.
 
 Version `0.1.0-alpha.2` is an unpublished migration candidate. It compiles the
 four Adapter API `0.1.0-alpha.2` sources and preserves the accepted renderer.
+The candidate production JAR is 50,655 bytes with SHA-256
+`62bbadf2f70d5335785001d26058a216892e6cf9db193db132ec4d93f862975b`.
 
 The add-on reads operator-installed resources and redistributes none of them.
 Unknown state, malformed/missing `color` NBT, missing resources, or a changed
