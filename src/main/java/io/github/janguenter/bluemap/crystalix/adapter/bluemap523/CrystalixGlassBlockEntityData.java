@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: MIT
  */
-package io.github.janguenter.bluemap.crystalix.adapter.bluemap522;
+package io.github.janguenter.bluemap.crystalix.adapter.bluemap523;
 
 import de.bluecolored.bluemap.core.world.mca.blockentity.MCABlockEntity;
 import de.bluecolored.bluenbt.NBTName;

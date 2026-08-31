@@ -1,44 +1,48 @@
 /*
  * SPDX-License-Identifier: MIT
  */
-package io.github.janguenter.bluemap.crystalix.adapter.bluemap522;
+package io.github.janguenter.bluemap.crystalix.adapter.bluemap523;
 
 import de.bluecolored.bluemap.core.map.hires.block.BlockRendererType;
 import de.bluecolored.bluemap.core.resources.pack.resourcepack.ResourcePack;
 import de.bluecolored.bluemap.core.util.Key;
-import de.bluecolored.bluemap.core.util.Keyed;
-import de.bluecolored.bluemap.core.util.Registry;
 import de.bluecolored.bluemap.core.world.mca.blockentity.BlockEntityType;
+import io.github.janguenter.bluemap.addon.adapter.api.bluemap523.RegistryGuard;
+import io.github.janguenter.bluemap.addon.adapter.api.bluemap523.ResourceExtensionType;
 import io.github.janguenter.bluemap.crystalix.activation.CrystalixRuntime;
 
-/** BlueMap 5.22 internal ABI registration boundary. */
-public final class BlueMap522Adapter {
+/** Exact BlueMap 5.23 feature-backport registration boundary. */
+public final class BlueMap523Adapter {
 
     private static final CrystalixRuntime RUNTIME = CrystalixRuntime.INSTANCE;
+    private static final Key EXTENSION_KEY = Key.parse("bluemap_crystalix:prototype");
     private static final BlockRendererType RENDERER = new BlockRendererType.Impl(
             Key.parse("bluemap_crystalix:glass"),
             (pack, gallery, settings) ->
                     new CrystalixRenderer(pack, gallery, settings, RUNTIME)
     );
     private static final ResourcePack.Extension<CrystalixResourceExtension> EXTENSION =
-            new CrystalixResourceExtensionType(RUNTIME);
+            new ResourceExtensionType<>(
+                    EXTENSION_KEY,
+                    pack -> new CrystalixResourceExtension(pack, RUNTIME)
+            );
     private static final BlockEntityType GLASS = new BlockEntityType.Impl(
             Key.parse("crystalix:glass_tile"), CrystalixGlassBlockEntityData.class
     );
 
-    private BlueMap522Adapter() {
+    private BlueMap523Adapter() {
     }
 
     public static synchronized boolean install() {
-        if (!canRegister(BlockRendererType.REGISTRY, RENDERER)
-                || !canRegister(ResourcePack.Extension.REGISTRY, EXTENSION)
-                || !canRegister(BlockEntityType.REGISTRY, GLASS)) {
+        if (!RegistryGuard.canRegister(BlockRendererType.REGISTRY, RENDERER)
+                || !RegistryGuard.canRegister(ResourcePack.Extension.REGISTRY, EXTENSION)
+                || !RegistryGuard.canRegister(BlockEntityType.REGISTRY, GLASS)) {
             RUNTIME.disable("registry-collision");
             return false;
         }
-        boolean installed = register(BlockRendererType.REGISTRY, RENDERER)
-                && register(ResourcePack.Extension.REGISTRY, EXTENSION)
-                && register(BlockEntityType.REGISTRY, GLASS);
+        boolean installed = RegistryGuard.register(BlockRendererType.REGISTRY, RENDERER)
+                && RegistryGuard.register(ResourcePack.Extension.REGISTRY, EXTENSION)
+                && RegistryGuard.register(BlockEntityType.REGISTRY, GLASS);
         if (!installed) {
             RUNTIME.disable("registry-collision");
         }
@@ -53,17 +57,7 @@ public final class BlueMap522Adapter {
         return resourcePack.getExtension(EXTENSION);
     }
 
-    private static <T extends Keyed> boolean canRegister(Registry<T> registry, T candidate) {
-        T existing = registry.get(candidate.getKey());
-        return existing == null || existing == candidate;
-    }
-
-    private static <T extends Keyed> boolean register(Registry<T> registry, T candidate) {
-        T existing = registry.get(candidate.getKey());
-        if (existing == null) {
-            registry.register(candidate);
-            existing = registry.get(candidate.getKey());
-        }
-        return existing == candidate;
+    static ResourcePack.Extension<CrystalixResourceExtension> extensionType() {
+        return EXTENSION;
     }
 }

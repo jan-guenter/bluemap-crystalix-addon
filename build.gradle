@@ -14,6 +14,10 @@ base {
     archivesName = artifact_id
 }
 
+sourceSets {
+    main.java.srcDir 'modules/bluemap-addon-adapter-api/src/main/java'
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -25,6 +29,25 @@ repositories {
 dependencies {
     compileOnly "de.bluecolored:bluemap-core:${bluemap_version}"
     compileOnly 'org.jetbrains:annotations:23.0.0'
+    testImplementation "de.bluecolored:bluemap-core:${bluemap_version}"
+    testImplementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+def artifactPins = [
+        [key: 'crystalix', property: 'crystalixJar'],
+        [key: 'fusion', property: 'fusionJar']
+]
+
+tasks.named('test', Test).configure {
+    artifactPins.each { pin ->
+        def exactJar = providers.gradleProperty(pin.property)
+        if (exactJar.isPresent()) {
+            systemProperty pin.property, exactJar.get()
+        }
+    }
 }
 
 tasks.named('processResources').configure {
@@ -34,6 +57,7 @@ tasks.named('processResources').configure {
     }
 }
 tasks.named('jar', Jar).configure {
+    includeEmptyDirs = false
     manifest {
         attributes(
                 'Automatic-Module-Name': 'io.github.janguenter.bluemap.crystalix',
@@ -58,7 +82,170 @@ tasks.named('jar', Jar).configure {
     }
 }
 
+tasks.named('sourcesJar', Jar).configure {
+    includeEmptyDirs = false
+    from('LICENSE') {
+        into 'META-INF'
+        rename { 'LICENSE-bluemap-crystalix-addon' }
+    }
+    from('NOTICE.md') {
+        into 'META-INF'
+        rename { 'NOTICE-bluemap-crystalix-addon.md' }
+    }
+    from('THIRD_PARTY.md') {
+        into 'META-INF'
+        rename { 'THIRD_PARTY-bluemap-crystalix-addon.md' }
+    }
+    from('provenance/upstreams.json') {
+        into 'META-INF/bluemap-crystalix'
+    }
+}
+
 def productionJar = tasks.named('jar', Jar).flatMap { it.archiveFile }
+def publishedSourcesJar = tasks.named('sourcesJar', Jar).flatMap { it.archiveFile }
+def sharedAdapterApiPackage =
+        'io/github/janguenter/bluemap/addon/adapter/api/bluemap523/'
+def sharedAdapterApiClasses = [
+        'BlueMapRuntimeCompatibility.class',
+        'RegistryGuard.class',
+        'ResourceExtensionType.class',
+        'SyntheticDispatch.class'
+].collect { sharedAdapterApiPackage + it }
+def sharedAdapterApiSources = [
+        'BlueMapRuntimeCompatibility.java',
+        'RegistryGuard.java',
+        'ResourceExtensionType.java',
+        'SyntheticDispatch.java'
+].collect { sharedAdapterApiPackage + it }
+def legacyLocalAdapterPackage =
+        'io/github/janguenter/bluemap/crystalix/adapter/bluemap522/'
+def displacedAdapterHelpers = [
+        'io/github/janguenter/bluemap/crystalix/adapter/bluemap523/AdapterCompatibility',
+        'io/github/janguenter/bluemap/crystalix/adapter/bluemap523/CrystalixResourceExtensionType'
+]
+
+tasks.register('verifyPinnedArtifacts', Exec) {
+    doFirst {
+        def arguments = [
+                'bluemap-addon-toolkit',
+                'artifacts',
+                'verify',
+                '--manifest',
+                'provenance/upstreams.json'
+        ]
+        artifactPins.each { pin ->
+            def value = providers.gradleProperty(pin.property)
+            if (!value.isPresent()) {
+                throw new GradleException(
+                        "Set -P${pin.property} to the exact ${pin.key} runtime JAR."
+                )
+            }
+            arguments.add('--artifact')
+            arguments.add("${pin.key}=${value.get()}")
+        }
+        commandLine arguments
+    }
+}
+
+tasks.register('verifyProductionJar') {
+    dependsOn tasks.named('jar')
+    inputs.file(productionJar)
+    doLast {
+        def zip = new java.util.zip.ZipFile(inputs.files.singleFile)
+        try {
+            def entries = zip.entries().findAll { !it.directory }.collect { it.name }
+            def required = [
+                    'bluemap.addon.json',
+                    'io/github/janguenter/bluemap/crystalix/BlueMapCrystalixAddon.class',
+                    'META-INF/LICENSE-bluemap-crystalix-addon',
+                    'META-INF/bluemap-crystalix/upstreams.json'
+            ]
+            required.addAll(sharedAdapterApiClasses)
+            def missing = required.findAll { !entries.contains(it) }
+            def nonUniqueShared = sharedAdapterApiClasses.findAll { shared ->
+                entries.count { it == shared } != 1
+            }
+            def foreignClasses = entries.findAll { entry ->
+                entry.endsWith('.class')
+                        && !entry.startsWith('io/github/janguenter/bluemap/crystalix/')
+                        && !sharedAdapterApiClasses.contains(entry)
+            }
+            def forbidden = entries.findAll { entry ->
+                entry.endsWith('.jar')
+                        || entry == 'META-INF/neoforge.mods.toml'
+                        || entry == 'fabric.mod.json'
+                        || entry.endsWith('.mixins.json')
+                        || entry.startsWith('net/minecraft/')
+                        || entry.startsWith('net/neoforged/')
+                        || entry.startsWith('gallery/')
+                        || entry.startsWith('assets/crystalix/')
+                        || entry.startsWith('assets/fusion/')
+                        || entry.startsWith(legacyLocalAdapterPackage)
+                        || displacedAdapterHelpers.any { helper -> entry.startsWith(helper) }
+                        || (entry.startsWith(sharedAdapterApiPackage)
+                            && !sharedAdapterApiClasses.contains(entry))
+            }
+            if (!missing.isEmpty() || !nonUniqueShared.isEmpty()
+                    || !foreignClasses.isEmpty() || !forbidden.isEmpty()) {
+                throw new GradleException(
+                        "Production JAR boundary mismatch: missing=${missing}, "
+                                + "nonUniqueShared=${nonUniqueShared}, "
+                                + "foreignClasses=${foreignClasses}, forbidden=${forbidden}"
+                )
+            }
+        } finally {
+            zip.close()
+        }
+    }
+}
+
+tasks.register('verifySourcesJar') {
+    dependsOn tasks.named('sourcesJar')
+    inputs.file(publishedSourcesJar)
+    doLast {
+        def zip = new java.util.zip.ZipFile(inputs.files.singleFile)
+        try {
+            def entries = zip.entries().findAll { !it.directory }.collect { it.name }
+            def required = [
+                    'io/github/janguenter/bluemap/crystalix/BlueMapCrystalixAddon.java',
+                    'bluemap.addon.json',
+                    'META-INF/LICENSE-bluemap-crystalix-addon',
+                    'META-INF/bluemap-crystalix/upstreams.json'
+            ]
+            required.addAll(sharedAdapterApiSources)
+            def missing = required.findAll { !entries.contains(it) }
+            def nonUniqueShared = sharedAdapterApiSources.findAll { shared ->
+                entries.count { it == shared } != 1
+            }
+            def foreignJava = entries.findAll { entry ->
+                entry.endsWith('.java')
+                        && !entry.startsWith('io/github/janguenter/bluemap/crystalix/')
+                        && !sharedAdapterApiSources.contains(entry)
+            }
+            def forbidden = entries.findAll { entry ->
+                entry.endsWith('.class')
+                        || entry.endsWith('.jar')
+                        || entry.startsWith('assets/crystalix/')
+                        || entry.startsWith('assets/fusion/')
+                        || entry.startsWith(legacyLocalAdapterPackage)
+                        || displacedAdapterHelpers.any { helper -> entry == "${helper}.java" }
+                        || (entry.startsWith(sharedAdapterApiPackage)
+                            && !sharedAdapterApiSources.contains(entry))
+            }
+            if (!missing.isEmpty() || !nonUniqueShared.isEmpty()
+                    || !foreignJava.isEmpty() || !forbidden.isEmpty()) {
+                throw new GradleException(
+                        "Sources JAR boundary mismatch: missing=${missing}, "
+                                + "nonUniqueShared=${nonUniqueShared}, "
+                                + "foreignJava=${foreignJava}, forbidden=${forbidden}"
+                )
+            }
+        } finally {
+            zip.close()
+        }
+    }
+}
+
 tasks.register('verifyAcceptedProductionJar') {
     dependsOn tasks.named('jar')
     inputs.file(productionJar)
@@ -72,6 +259,9 @@ tasks.register('verifyAcceptedProductionJar') {
                 .encodeHex()
                 .toString()
 
+        if (expectedSize <= 0 || expectedSha256 == 'PENDING') {
+            throw new GradleException('Accepted production JAR identity is unsealed')
+        }
         if (jarFile.length() != expectedSize) {
             throw new GradleException(
                     "Accepted production JAR size mismatch: "
@@ -88,7 +278,13 @@ tasks.register('verifyAcceptedProductionJar') {
 }
 
 tasks.named('check').configure {
-    dependsOn tasks.named('verifyAcceptedProductionJar')
+    dependsOn tasks.named('verifyProductionJar')
+    dependsOn tasks.named('verifySourcesJar')
+}
+
+tasks.register('prototypeCheck') {
+    dependsOn tasks.named('check')
+    dependsOn tasks.named('verifyPinnedArtifacts')
 }
 
 publishing {

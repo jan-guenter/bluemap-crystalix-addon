@@ -1,7 +1,7 @@
 /*
  * SPDX-License-Identifier: MIT
  */
-package io.github.janguenter.bluemap.crystalix.adapter.bluemap522;
+package io.github.janguenter.bluemap.crystalix.adapter.bluemap523;
 
 import de.bluecolored.bluemap.core.map.TextureGallery;
 import de.bluecolored.bluemap.core.map.hires.RenderSettings;
@@ -42,7 +42,7 @@ final class CrystalixCubeEmitter {
         this.resourcePack = resourcePack;
         this.textureGallery = textureGallery;
         this.renderSettings = renderSettings;
-        this.extension = BlueMap522Adapter.extension(resourcePack);
+        this.extension = BlueMap523Adapter.extension(resourcePack);
     }
 
     boolean render(
